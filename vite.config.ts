@@ -10,29 +10,14 @@ export default defineConfig({
     electron([
       {
         entry: 'electron/main.ts',
-        vite: {
-          build: {
-            outDir: 'dist-electron',
-            minify: false,
-            rollupOptions: {
-              external: ['electron', 'electron/app', 'electron/ipcMain', 'electron/BrowserWindow']
-            }
-          }
+        onstart(options) {
+          options.startup()
         }
       },
       {
         entry: 'electron/preload.ts',
         onstart(options) {
           options.reload()
-        },
-        vite: {
-          build: {
-            outDir: 'dist-electron',
-            minify: false,
-            rollupOptions: {
-              external: ['electron', 'electron/contextBridge']
-            }
-          }
         }
       }
     ]),
