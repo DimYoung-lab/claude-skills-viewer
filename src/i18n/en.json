@@ -1,0 +1,16 @@
+{
+  "headerTitle": "Claude Skills Viewer",
+  "refresh": "Refresh",
+  "language": "Language",
+  "usageCount": "Usage Count",
+  "lastUsed": "Last Used",
+  "viewDetails": "View Details",
+  "close": "Close",
+  "loading": "Loading...",
+  "noSkills": "No Skills Available",
+  "error": "Failed to load",
+  "skillDetails": "Skill Details",
+  "retry": "Retry",
+  "totalSkills": "Total Skills",
+  "times": "times"
+}

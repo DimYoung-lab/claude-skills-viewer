@@ -1,0 +1,16 @@
+{
+  "headerTitle": "Claude Skills 查看器",
+  "refresh": "刷新",
+  "language": "语言",
+  "usageCount": "使用次数",
+  "lastUsed": "上次使用",
+  "viewDetails": "查看详情",
+  "close": "关闭",
+  "loading": "加载中...",
+  "noSkills": "暂无 Skills",
+  "error": "加载失败",
+  "skillDetails": "Skill 详情",
+  "retry": "重试",
+  "totalSkills": "Skills 总数",
+  "times": "次"
+}
