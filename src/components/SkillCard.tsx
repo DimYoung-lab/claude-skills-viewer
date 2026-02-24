@@ -1,4 +1,5 @@
 import { useLanguage } from '../context/LanguageContext'
+import { getSkillName } from '../data/skillDescriptions'
 
 // Emoji mapping for skills
 const skillEmojis: Record<string, string> = {
@@ -12,10 +13,12 @@ const skillEmojis: Record<string, string> = {
   'meeting-summary': '🤝',
   'skill-creator': '🛠️',
   'claude-developer-platform': '🤖',
+  'superpowers': '📁',
   'default': '⚡'
 }
 
-function getSkillEmoji(skillId: string): string {
+function getSkillEmoji(skillId: string, isFolder?: boolean): string {
+  if (isFolder) return '📁'
   return skillEmojis[skillId] || skillEmojis.default
 }
 
@@ -24,31 +27,57 @@ interface SkillCardProps {
     id: string
     name: string
     description?: string
+    isFolder?: boolean
+    children?: any[]
   }
   onClick: () => void
+  isExpanded?: boolean
 }
 
-export function SkillCard({ skill, onClick }: SkillCardProps) {
-  const { t } = useLanguage()
-  const emoji = getSkillEmoji(skill.id)
+export function SkillCard({ skill, onClick, isExpanded }: SkillCardProps) {
+  const { language } = useLanguage()
+  const emoji = getSkillEmoji(skill.id, skill.isFolder)
+
+  // Get Chinese name if available
+  const displayName = language === 'zh' ? getSkillName(skill.id) : skill.name
+  const childCount = skill.children?.length || 0
 
   return (
     <button
       onClick={onClick}
-      className="group relative flex flex-col items-center p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-sky-500/10 hover:border-sky-300 transition-all duration-300 active:scale-95 animate-fade-in"
+      className={`group relative flex flex-col items-center p-6 bg-white rounded-2xl border shadow-sm hover:shadow-xl hover:shadow-sky-500/10 transition-all duration-300 active:scale-95 animate-fade-in ${
+        skill.isFolder
+          ? 'border-amber-300 hover:border-amber-400'
+          : 'border-slate-200 hover:border-sky-300'
+      }`}
     >
       {/* Emoji Icon */}
-      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">
+      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300 ${
+        skill.isFolder
+          ? 'bg-gradient-to-br from-amber-50 to-orange-100'
+          : 'bg-gradient-to-br from-sky-50 to-blue-100'
+      }`}>
         {emoji}
       </div>
 
       {/* Skill Name */}
-      <h3 className="text-lg font-semibold text-slate-800 mb-2 text-center">
-        {skill.name}
+      <h3 className="text-lg font-semibold text-slate-800 mb-1 text-center">
+        {displayName}
       </h3>
 
+      {/* Folder child count */}
+      {skill.isFolder && childCount > 0 && (
+        <span className="text-xs text-amber-600 font-medium">
+          {isExpanded ? '▼' : '▶'} {childCount} 个子技能
+        </span>
+      )}
+
       {/* Hover indicator */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-sky-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+        skill.isFolder
+          ? 'bg-gradient-to-r from-amber-500/5 to-orange-500/5'
+          : 'bg-gradient-to-r from-sky-500/5 to-blue-500/5'
+      }`} />
     </button>
   )
 }

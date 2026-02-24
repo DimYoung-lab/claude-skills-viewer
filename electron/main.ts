@@ -18,6 +18,8 @@ interface Skill {
   description: string
   path: string
   hasSkillFile: boolean
+  isFolder?: boolean
+  children?: Skill[]
 }
 
 function getAllSkills(): Skill[] {
@@ -38,6 +40,9 @@ function getAllSkills(): Skill[] {
       const skillPath = path.join(skillsDir, entry.name)
       const skillName = entry.name
 
+      // Check if this is a skill folder (contains subdirectories with SKILL.md)
+      const childSkills = getChildSkills(skillPath)
+
       // Look for SKILL.md in the skill folder
       let description = ''
       const skillMdPath = path.join(skillPath, 'SKILL.md')
@@ -52,19 +57,69 @@ function getAllSkills(): Skill[] {
       const skillFilePath = path.join(skillsDir, `${skillName}.skill`)
       const hasSkillFile = fs.existsSync(skillFilePath)
 
-      skills.push({
+      // If it has child skills, treat it as a folder
+      const isFolder = childSkills.length > 0
+
+      const skill: Skill = {
         id: skillName,
         name: formatSkillName(skillName),
-        description,
+        description: description || (isFolder ? `包含 ${childSkills.length} 个子技能` : ''),
         path: skillPath,
-        hasSkillFile
-      })
+        hasSkillFile,
+        isFolder,
+        children: isFolder ? childSkills : undefined
+      }
+
+      skills.push(skill)
     }
   } catch (error) {
     console.error('Error reading skills:', error)
   }
 
   return skills.sort((a, b) => a.name.localeCompare(b.name))
+}
+
+// Recursively get child skills from a folder
+function getChildSkills(folderPath: string): Skill[] {
+  const children: Skill[] = []
+
+  try {
+    if (!fs.existsSync(folderPath)) {
+      return children
+    }
+
+    const entries = fs.readdirSync(folderPath, { withFileTypes: true })
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+
+      const childPath = path.join(folderPath, entry.name)
+
+      // Look for SKILL.md in the child folder
+      let description = ''
+      const skillMdPath = path.join(childPath, 'SKILL.md')
+      if (fs.existsSync(skillMdPath)) {
+        const content = fs.readFileSync(skillMdPath, 'utf-8')
+        // Get first 200 chars as description
+        description = content.substring(0, 200).replace(/[#*`\n]/g, ' ').trim()
+        if (content.length > 200) description += '...'
+      }
+
+      children.push({
+        id: entry.name,
+        name: formatSkillName(entry.name),
+        description,
+        path: childPath,
+        hasSkillFile: false,
+        isFolder: false,
+        children: undefined
+      })
+    }
+  } catch (error) {
+    console.error('Error reading child skills:', error)
+  }
+
+  return children.sort((a, b) => a.name.localeCompare(b.name))
 }
 
 function formatSkillName(name: string): string {

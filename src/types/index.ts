@@ -4,6 +4,8 @@ export interface Skill {
   description?: string;
   icon?: string;
   path?: string;
+  isFolder?: boolean;
+  children?: Skill[];
 }
 
 export interface UsageRecord {

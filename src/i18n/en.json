@@ -19,5 +19,8 @@
   "categoryNews": "News",
   "categoryProductivity": "Productivity",
   "categoryDev": "Dev",
-  "noResults": "No matching Skills found"
+  "noResults": "No matching Skills found",
+  "childSkills": "Child Skills",
+  "expandFolder": "Expand",
+  "collapseFolder": "Collapse"
 }

@@ -36,6 +36,7 @@ function AppContent() {
   const [refreshing, setRefreshing] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<SkillCategory>('all')
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true)
@@ -43,9 +44,27 @@ function AppContent() {
     setRefreshing(false)
   }, [refresh])
 
-  const handleSkillClick = useCallback((skill: Skill) => {
-    setSelectedSkill(skill)
+  const toggleFolder = useCallback((skillId: string) => {
+    setExpandedFolders(prev => {
+      const next = new Set(prev)
+      if (next.has(skillId)) {
+        next.delete(skillId)
+      } else {
+        next.add(skillId)
+      }
+      return next
+    })
   }, [])
+
+  const handleSkillClick = useCallback((skill: Skill) => {
+    if (skill.isFolder && skill.children && skill.children.length > 0) {
+      // Toggle folder expansion
+      toggleFolder(skill.id)
+    } else {
+      // Open skill modal
+      setSelectedSkill(skill)
+    }
+  }, [toggleFolder])
 
   const handleCloseModal = useCallback(() => {
     setSelectedSkill(null)
@@ -53,8 +72,8 @@ function AppContent() {
 
   const filteredSkills = useMemo(() => {
     return skills.filter(skill => {
-      // 分类过滤
-      if (selectedCategory !== 'all') {
+      // 分类过滤 - 只过滤顶层技能，技能夹总是显示
+      if (selectedCategory !== 'all' && !skill.isFolder) {
         const category = skillCategoryMap[skill.id] || 'all'
         if (category !== selectedCategory) return false
       }
@@ -63,11 +82,39 @@ function AppContent() {
         const query = searchQuery.toLowerCase()
         const matchName = skill.name.toLowerCase().includes(query)
         const matchDesc = skill.description?.toLowerCase().includes(query)
-        if (!matchName && !matchDesc) return false
+        // Also check children for folder skills
+        const matchChildren = skill.children?.some(child =>
+          child.name.toLowerCase().includes(query) ||
+          child.description?.toLowerCase().includes(query)
+        )
+        if (!matchName && !matchDesc && !matchChildren) return false
       }
       return true
     })
   }, [skills, searchQuery, selectedCategory])
+
+  // Flatten skills with expanded children for display
+  const displaySkills = useMemo(() => {
+    const result: Skill[] = []
+    for (const skill of filteredSkills) {
+      result.push(skill)
+      // Add children if folder is expanded
+      if (skill.isFolder && skill.children && expandedFolders.has(skill.id)) {
+        // Filter children based on search
+        if (searchQuery.trim()) {
+          const query = searchQuery.toLowerCase()
+          const matchingChildren = skill.children.filter(child =>
+            child.name.toLowerCase().includes(query) ||
+            child.description?.toLowerCase().includes(query)
+          )
+          result.push(...matchingChildren)
+        } else {
+          result.push(...skill.children)
+        }
+      }
+    }
+    return result
+  }, [filteredSkills, expandedFolders, searchQuery])
 
   if (loading) {
     return (
@@ -110,8 +157,8 @@ function AppContent() {
         {/* Search and Filter Bar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <p className="text-slate-600">
-            {t('totalSkills')}: <span className="font-semibold text-slate-800">{filteredSkills.length}</span>
-            {filteredSkills.length !== skills.length && (
+            {t('totalSkills')}: <span className="font-semibold text-slate-800">{displaySkills.length}</span>
+            {displaySkills.length !== skills.length && (
               <span className="text-slate-400 text-sm ml-2">
                 ({skills.length} {t('totalSkills').toLowerCase()})
               </span>
@@ -158,7 +205,7 @@ function AppContent() {
         </div>
 
         {/* Skills Grid */}
-        {filteredSkills.length === 0 ? (
+        {displaySkills.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
               <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,11 +216,12 @@ function AppContent() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {filteredSkills.map(skill => (
+            {displaySkills.map(skill => (
               <SkillCard
                 key={skill.id}
                 skill={skill}
                 onClick={() => handleSkillClick(skill)}
+                isExpanded={skill.isFolder ? expandedFolders.has(skill.id) : undefined}
               />
             ))}
           </div>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 import type { Language, LanguageContextType } from '../types'
 import zhTranslations from '../i18n/zh.json'
 import enTranslations from '../i18n/en.json'

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { Skill } from '../types'
 import { useLanguage } from '../context/LanguageContext'
+import { getSkillName, getSkillDescription } from '../data/skillDescriptions'
 
 // Emoji mapping for skills
 const skillEmojis: Record<string, string> = {
@@ -14,10 +15,12 @@ const skillEmojis: Record<string, string> = {
   'meeting-summary': '🤝',
   'skill-creator': '🛠️',
   'claude-developer-platform': '🤖',
+  'superpowers': '📁',
   'default': '⚡'
 }
 
-function getSkillEmoji(skillId: string): string {
+function getSkillEmoji(skillId: string, isFolder?: boolean): string {
+  if (isFolder) return '📁'
   return skillEmojis[skillId] || skillEmojis.default
 }
 
@@ -27,7 +30,7 @@ interface SkillModalProps {
 }
 
 export function SkillModal({ skill, onClose }: SkillModalProps) {
-  const { t } = useLanguage()
+  const { language } = useLanguage()
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -39,7 +42,12 @@ export function SkillModal({ skill, onClose }: SkillModalProps) {
 
   if (!skill) return null
 
-  const emoji = getSkillEmoji(skill.id)
+  const emoji = getSkillEmoji(skill.id, skill.isFolder)
+
+  // Get Chinese name and description if available
+  const chineseDesc = getSkillDescription(skill.id)
+  const displayName = language === 'zh' ? getSkillName(skill.id) : skill.name
+  const displayDesc = language === 'zh' && chineseDesc ? chineseDesc.description : skill.description
 
   return (
     <div
@@ -55,7 +63,11 @@ export function SkillModal({ skill, onClose }: SkillModalProps) {
         onClick={e => e.stopPropagation()}
       >
         {/* Gradient Header */}
-        <div className="h-24 bg-gradient-to-r from-sky-500 to-blue-600" />
+        <div className={`h-24 ${
+          skill.isFolder
+            ? 'bg-gradient-to-r from-amber-500 to-orange-600'
+            : 'bg-gradient-to-r from-sky-500 to-blue-600'
+        }`} />
 
         {/* Close Button */}
         <button
@@ -76,13 +88,32 @@ export function SkillModal({ skill, onClose }: SkillModalProps) {
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-slate-800 mb-2">
-            {skill.name}
+            {displayName}
           </h2>
 
-          {/* Description */}
-          <p className="text-slate-600 mb-6 leading-relaxed">
-            {skill.description || 'No description available.'}
+          {/* Description - show full description without truncation */}
+          <p className="text-slate-600 mb-6 leading-relaxed whitespace-pre-wrap">
+            {displayDesc || '暂无描述 / No description available.'}
           </p>
+
+          {/* Children list for folders */}
+          {skill.isFolder && skill.children && skill.children.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-slate-700 mb-2">
+                {language === 'zh' ? '子技能列表' : 'Child Skills'}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {skill.children.map(child => (
+                  <span
+                    key={child.id}
+                    className="px-2 py-1 text-xs bg-amber-100 text-amber-700 rounded-full"
+                  >
+                    {language === 'zh' ? getSkillName(child.id) : child.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Path */}
           <div className="p-3 rounded-lg bg-slate-100 text-xs text-slate-500 break-all">

@@ -19,5 +19,8 @@
   "categoryNews": "资讯",
   "categoryProductivity": "效率",
   "categoryDev": "开发",
-  "noResults": "未找到匹配的 Skills"
+  "noResults": "未找到匹配的 Skills",
+  "childSkills": "子技能列表",
+  "expandFolder": "展开",
+  "collapseFolder": "收起"
 }
