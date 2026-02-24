@@ -3,19 +3,36 @@ import type { Skill } from '../types'
 import { useLanguage } from '../context/LanguageContext'
 import { getSkillName, getSkillDescription } from '../data/skillDescriptions'
 
-// Emoji mapping for skills
+// Emoji mapping for skills - unique icon for each skill
 const skillEmojis: Record<string, string> = {
+  // Main skills
   'prd-writer': '📝',
   'copywriter': '📋',
   'daily-ai-news': '📰',
   'rag-qa': '🔍',
   'agent-teams': '👥',
-  'frontend-design': '🎨',
-  'thesis-progress-report': '📚',
-  'meeting-summary': '🤝',
   'skill-creator': '🛠️',
-  'claude-developer-platform': '🤖',
-  'superpowers': '📁',
+  'superpowers': '💼',
+  'meeting-summary': '🤝',
+  'thesis-progress-report': '📚',
+
+  // Superpowers child skills
+  'brainstorming': '💡',
+  'dispatching-parallel-agents': '⚡',
+  'executing-plans': '🚀',
+  'finishing-a-development-branch': '🌿',
+  'receiving-code-review': '👀',
+  'requesting-code-review': '📤',
+  'subagent-driven-development': '🤖',
+  'systematic-debugging': '🔧',
+  'test-driven-development': '✅',
+  'using-git-worktrees': '🌳',
+  'using-superpowers': '✨',
+  'verification-before-completion': '✔️',
+  'writing-plans': '📋',
+  'writing-skills': '✍️',
+
+  // Default icon for unknown skills
   'default': '⚡'
 }
 

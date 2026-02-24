@@ -44,7 +44,7 @@
     "appId": "com.claude.skillsviewer",
     "productName": "Claude Skills Viewer",
     "directories": {
-      "output": "release"
+      "output": "release3"
     },
     "win": {
       "target": "dir"

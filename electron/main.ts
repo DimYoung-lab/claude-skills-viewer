@@ -80,6 +80,7 @@ function getAllSkills(): Skill[] {
 }
 
 // Recursively get child skills from a folder
+// Only folders containing SKILL.md are considered real skills
 function getChildSkills(folderPath: string): Skill[] {
   const children: Skill[] = []
 
@@ -95,15 +96,18 @@ function getChildSkills(folderPath: string): Skill[] {
 
       const childPath = path.join(folderPath, entry.name)
 
-      // Look for SKILL.md in the child folder
-      let description = ''
+      // Only consider folders that contain SKILL.md as real skills
       const skillMdPath = path.join(childPath, 'SKILL.md')
-      if (fs.existsSync(skillMdPath)) {
-        const content = fs.readFileSync(skillMdPath, 'utf-8')
-        // Get first 200 chars as description
-        description = content.substring(0, 200).replace(/[#*`\n]/g, ' ').trim()
-        if (content.length > 200) description += '...'
+      if (!fs.existsSync(skillMdPath)) {
+        // Skip non-skill directories like assets, references, scripts
+        continue
       }
+
+      // This is a real skill folder, read its description
+      let description = ''
+      const content = fs.readFileSync(skillMdPath, 'utf-8')
+      description = content.substring(0, 200).replace(/[#*`\n]/g, ' ').trim()
+      if (content.length > 200) description += '...'
 
       children.push({
         id: entry.name,

@@ -5,6 +5,7 @@ import { SkillCard } from './components/SkillCard'
 import { SkillModal } from './components/SkillModal'
 import { useSkills } from './hooks/useSkills'
 import { useLanguage } from './context/LanguageContext'
+import { getSkillName } from './data/skillDescriptions'
 import type { Skill } from './types'
 
 type SkillCategory = 'all' | 'writing' | 'news' | 'productivity' | 'dev'
@@ -77,16 +78,21 @@ function AppContent() {
         const category = skillCategoryMap[skill.id] || 'all'
         if (category !== selectedCategory) return false
       }
-      // 搜索过滤
+      // 搜索过滤 - 支持中文名称搜索
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase()
-        const matchName = skill.name.toLowerCase().includes(query)
+        // Search in English name, Chinese name, and description
+        const chineseName = getSkillName(skill.id)
+        const matchName = skill.name.toLowerCase().includes(query) ||
+                          chineseName.toLowerCase().includes(query)
         const matchDesc = skill.description?.toLowerCase().includes(query)
         // Also check children for folder skills
-        const matchChildren = skill.children?.some(child =>
-          child.name.toLowerCase().includes(query) ||
-          child.description?.toLowerCase().includes(query)
-        )
+        const matchChildren = skill.children?.some(child => {
+          const childChineseName = getSkillName(child.id)
+          return child.name.toLowerCase().includes(query) ||
+                 childChineseName.toLowerCase().includes(query) ||
+                 child.description?.toLowerCase().includes(query)
+        })
         if (!matchName && !matchDesc && !matchChildren) return false
       }
       return true
@@ -94,27 +100,67 @@ function AppContent() {
   }, [skills, searchQuery, selectedCategory])
 
   // Flatten skills with expanded children for display
+  // New sorting logic:
+  // 1. Folders (isFolder=true) at the front, sorted by English name
+  // 2. Child skills in expanded folders right after their parent folder, sorted by English name
+  // 3. Regular skills at the end, sorted by English name
   const displaySkills = useMemo(() => {
-    const result: Skill[] = []
-    for (const skill of filteredSkills) {
-      result.push(skill)
+    const result: { skill: Skill; isChild: boolean }[] = []
+    const regularSkills: Skill[] = []
+
+    // First, sort folders by name
+    const sortedFolders = [...filteredSkills]
+      .filter(s => s.isFolder)
+      .sort((a, b) => a.name.localeCompare(b.name))
+
+    for (const skill of sortedFolders) {
+      result.push({ skill, isChild: false })
+
       // Add children if folder is expanded
-      if (skill.isFolder && skill.children && expandedFolders.has(skill.id)) {
-        // Filter children based on search
+      if (skill.children && expandedFolders.has(skill.id)) {
+        // Filter and sort children
+        let children = skill.children
         if (searchQuery.trim()) {
           const query = searchQuery.toLowerCase()
-          const matchingChildren = skill.children.filter(child =>
-            child.name.toLowerCase().includes(query) ||
-            child.description?.toLowerCase().includes(query)
-          )
-          result.push(...matchingChildren)
-        } else {
-          result.push(...skill.children)
+          children = skill.children.filter(child => {
+            const childChineseName = getSkillName(child.id)
+            return child.name.toLowerCase().includes(query) ||
+                   childChineseName.toLowerCase().includes(query) ||
+                   child.description?.toLowerCase().includes(query)
+          })
+        }
+        // Sort children by name
+        const sortedChildren = [...children].sort((a, b) =>
+          a.name.localeCompare(b.name)
+        )
+        for (const child of sortedChildren) {
+          result.push({ skill: child, isChild: true })
         }
       }
     }
+
+    // Collect regular skills (non-folder skills)
+    for (const skill of filteredSkills) {
+      if (!skill.isFolder) {
+        regularSkills.push(skill)
+      }
+    }
+
+    // Sort and add regular skills
+    const sortedRegular = [...regularSkills].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )
+    for (const skill of sortedRegular) {
+      result.push({ skill, isChild: false })
+    }
+
     return result
   }, [filteredSkills, expandedFolders, searchQuery])
+
+  // Check if we need to show divider (when there are expanded folder children)
+  const showDivider = useMemo(() => {
+    return displaySkills.some(item => item.isChild)
+  }, [displaySkills])
 
   if (loading) {
     return (
@@ -161,6 +207,11 @@ function AppContent() {
             {displaySkills.length !== skills.length && (
               <span className="text-slate-400 text-sm ml-2">
                 ({skills.length} {t('totalSkills').toLowerCase()})
+              </span>
+            )}
+            {showDivider && (
+              <span className="text-blue-500 text-sm ml-2">
+                (含 {displaySkills.filter(d => d.isChild).length} 个子技能)
               </span>
             )}
           </p>
@@ -215,16 +266,27 @@ function AppContent() {
             <p className="text-slate-600 text-lg">{t('noResults')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {displaySkills.map(skill => (
-              <SkillCard
-                key={skill.id}
-                skill={skill}
-                onClick={() => handleSkillClick(skill)}
-                isExpanded={skill.isFolder ? expandedFolders.has(skill.id) : undefined}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              {displaySkills.map(({ skill, isChild }) => (
+                <SkillCard
+                  key={skill.id}
+                  skill={skill}
+                  onClick={() => handleSkillClick(skill)}
+                  isExpanded={skill.isFolder ? expandedFolders.has(skill.id) : undefined}
+                  isChild={isChild}
+                />
+              ))}
+            </div>
+            {/* Divider between expanded children and regular skills */}
+            {showDivider && (
+              <div className="mt-8 mb-4 border-t-2 border-dashed border-slate-200">
+                <span className="block text-center text-sm text-slate-400 -mt-3 bg-slate-50 px-4 w-fit mx-auto">
+                  {t('categoryAll')}
+                </span>
+              </div>
+            )}
+          </>
         )}
       </main>
 

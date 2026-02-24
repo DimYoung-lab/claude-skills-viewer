@@ -1,24 +1,43 @@
 import { useLanguage } from '../context/LanguageContext'
 import { getSkillName } from '../data/skillDescriptions'
 
-// Emoji mapping for skills
+// Emoji mapping for skills - unique icon for each skill
 const skillEmojis: Record<string, string> = {
+  // Main skills
   'prd-writer': '📝',
   'copywriter': '📋',
   'daily-ai-news': '📰',
   'rag-qa': '🔍',
   'agent-teams': '👥',
-  'frontend-design': '🎨',
-  'thesis-progress-report': '📚',
-  'meeting-summary': '🤝',
   'skill-creator': '🛠️',
-  'claude-developer-platform': '🤖',
-  'superpowers': '📁',
+  'superpowers': '💼',
+  'meeting-summary': '🤝',
+  'thesis-progress-report': '📚',
+
+  // Superpowers child skills
+  'brainstorming': '💡',
+  'dispatching-parallel-agents': '⚡',
+  'executing-plans': '🚀',
+  'finishing-a-development-branch': '🌿',
+  'receiving-code-review': '👀',
+  'requesting-code-review': '📤',
+  'subagent-driven-development': '🤖',
+  'systematic-debugging': '🔧',
+  'test-driven-development': '✅',
+  'using-git-worktrees': '🌳',
+  'using-superpowers': '✨',
+  'verification-before-completion': '✔️',
+  'writing-plans': '📋',
+  'writing-skills': '✍️',
+
+  // Default icon for unknown skills
   'default': '⚡'
 }
 
 function getSkillEmoji(skillId: string, isFolder?: boolean): string {
+  // Skill folders get a special folder icon
   if (isFolder) return '📁'
+  // Otherwise use skill-specific icon
   return skillEmojis[skillId] || skillEmojis.default
 }
 
@@ -32,9 +51,10 @@ interface SkillCardProps {
   }
   onClick: () => void
   isExpanded?: boolean
+  isChild?: boolean
 }
 
-export function SkillCard({ skill, onClick, isExpanded }: SkillCardProps) {
+export function SkillCard({ skill, onClick, isExpanded, isChild }: SkillCardProps) {
   const { language } = useLanguage()
   const emoji = getSkillEmoji(skill.id, skill.isFolder)
 
@@ -48,8 +68,10 @@ export function SkillCard({ skill, onClick, isExpanded }: SkillCardProps) {
       className={`group relative flex flex-col items-center p-6 bg-white rounded-2xl border shadow-sm hover:shadow-xl hover:shadow-sky-500/10 transition-all duration-300 active:scale-95 animate-fade-in ${
         skill.isFolder
           ? 'border-amber-300 hover:border-amber-400'
-          : 'border-slate-200 hover:border-sky-300'
-      }`}
+          : isChild
+            ? 'border-blue-200 hover:border-blue-300'
+            : 'border-slate-200 hover:border-sky-300'
+      } ${isChild ? 'bg-blue-50/50' : ''}`}
     >
       {/* Emoji Icon */}
       <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300 ${

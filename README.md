@@ -3,7 +3,7 @@
 一个现代化的桌面应用，用于查看和管理本地安装的 Claude Code Skills。
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Electron](https://img.shields.io/badge/Electron-31.x-blue)
+![Electron](https://img.shields.io/badge/Electron-25.x-blue)
 ![React](https://img.shields.io/badge/React-18.x-blue)
 ![Vite](https://img.shields.io/badge/Vite-5.x-purple)
 
@@ -15,12 +15,17 @@
 - 🔄 刷新按钮即时更新技能列表
 - 🌐 支持中英文语言切换
 - 💻 现代化桌面应用界面
+- 📁 智能识别技能文件夹（仅识别包含 SKILL.md 的子目录）
+- 🎨 每个技能拥有独特的 Emoji 图标
+- 🔍 支持中文名称搜索和筛选
+- ✨ 优化的排序：文件夹 → 展开的子技能 → 常规技能
+- 👁️ 视觉分隔线区分不同区域
 
 ## 技术栈
 
 - **前端框架**: React 18 + TypeScript
 - **构建工具**: Vite 5
-- **桌面容器**: Electron 31
+- **桌面容器**: Electron 25
 - **样式方案**: Tailwind CSS
 - **打包工具**: electron-builder
 
@@ -44,6 +49,8 @@ claude-skills-viewer/
 │   ├── i18n/             # 国际化文件
 │   │   ├── zh.json
 │   │   └── en.json
+│   ├── data/             # 技能数据
+│   │   └── skillDescriptions.ts
 │   ├── types/            # TypeScript 类型
 │   │   └── index.ts
 │   ├── App.tsx
@@ -89,6 +96,21 @@ npm run electron:build
 2. 运行 `npm run electron:dev` 启动开发版本
 3. 或运行 `npm run electron:build` 构建生产版本
 4. 应用会自动读取 `~/.claude/skills/` 目录下的 Skills
+
+## 更新日志
+
+### v1.0.1 (2024-02-24)
+
+- **技能文件夹检测优化**: 现在只识别包含 `SKILL.md` 文件的子目录，避免将 `assets`、`references`、`scripts` 等非技能目录误识别为子技能
+- **Emoji 图标优化**: 每个技能都拥有独特的 Emoji 图标，不再统一显示文件夹图标
+- **搜索功能修复**: 修复了搜索和筛选功能，现在支持中文名称搜索
+- **中文名称显示**: 技能卡片上直接显示中文名称
+- **排序逻辑优化**:
+  - 文件夹（技能合集）排在最前面
+  - 文件夹展开后的子技能紧跟文件夹后面
+  - 常规技能排在最后
+  - 所有技能按英文名称字母顺序排序
+- **视觉分隔**: 添加了虚线分隔线，清晰区分展开的子技能区域和常规技能区域
 
 ## 许可证
 
