@@ -44,9 +44,10 @@ function getSkillEmoji(skillId: string, isFolder?: boolean): string {
 interface SkillModalProps {
   skill: Skill | null
   onClose: () => void
+  isChild?: boolean
 }
 
-export function SkillModal({ skill, onClose }: SkillModalProps) {
+export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
   const { language } = useLanguage()
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export function SkillModal({ skill, onClose }: SkillModalProps) {
       >
         {/* Gradient Header */}
         <div className={`h-24 ${
-          skill.isFolder
+          skill.isFolder || isChild
             ? 'bg-gradient-to-r from-amber-500 to-orange-600'
             : 'bg-gradient-to-r from-sky-500 to-blue-600'
         }`} />

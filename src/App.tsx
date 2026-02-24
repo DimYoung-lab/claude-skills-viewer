@@ -34,6 +34,7 @@ function AppContent() {
   const { skills, loading, error, refresh } = useSkills()
   const { t } = useLanguage()
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
+  const [selectedIsChild, setSelectedIsChild] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<SkillCategory>('all')
@@ -57,18 +58,20 @@ function AppContent() {
     })
   }, [])
 
-  const handleSkillClick = useCallback((skill: Skill) => {
+  const handleSkillClick = useCallback((skill: Skill, isChild: boolean = false) => {
     if (skill.isFolder && skill.children && skill.children.length > 0) {
       // Toggle folder expansion
       toggleFolder(skill.id)
     } else {
       // Open skill modal
       setSelectedSkill(skill)
+      setSelectedIsChild(isChild)
     }
   }, [toggleFolder])
 
   const handleCloseModal = useCallback(() => {
     setSelectedSkill(null)
+    setSelectedIsChild(false)
   }, [])
 
   const filteredSkills = useMemo(() => {
@@ -272,7 +275,7 @@ function AppContent() {
                 <SkillCard
                   key={skill.id}
                   skill={skill}
-                  onClick={() => handleSkillClick(skill)}
+                  onClick={() => handleSkillClick(skill, isChild)}
                   isExpanded={skill.isFolder ? expandedFolders.has(skill.id) : undefined}
                   isChild={isChild}
                 />
@@ -293,6 +296,7 @@ function AppContent() {
       <SkillModal
         skill={selectedSkill}
         onClose={handleCloseModal}
+        isChild={selectedIsChild}
       />
     </div>
   )

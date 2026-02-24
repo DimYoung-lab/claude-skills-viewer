@@ -69,13 +69,13 @@ export function SkillCard({ skill, onClick, isExpanded, isChild }: SkillCardProp
         skill.isFolder
           ? 'border-amber-300 hover:border-amber-400'
           : isChild
-            ? 'border-blue-200 hover:border-blue-300'
+            ? 'border-amber-200 hover:border-amber-300'
             : 'border-slate-200 hover:border-sky-300'
-      } ${isChild ? 'bg-blue-50/50' : ''}`}
+      } ${isChild ? 'bg-amber-50/50' : ''}`}
     >
       {/* Emoji Icon */}
       <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300 ${
-        skill.isFolder
+        skill.isFolder || isChild
           ? 'bg-gradient-to-br from-amber-50 to-orange-100'
           : 'bg-gradient-to-br from-sky-50 to-blue-100'
       }`}>
@@ -96,7 +96,7 @@ export function SkillCard({ skill, onClick, isExpanded, isChild }: SkillCardProp
 
       {/* Hover indicator */}
       <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-        skill.isFolder
+        skill.isFolder || isChild
           ? 'bg-gradient-to-r from-amber-500/5 to-orange-500/5'
           : 'bg-gradient-to-r from-sky-500/5 to-blue-500/5'
       }`} />
