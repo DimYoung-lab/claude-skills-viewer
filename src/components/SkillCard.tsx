@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext'
-import { getSkillName } from '../data/skillDescriptions'
+import { getSkillName, getSkillNameEn } from '../data/skillDescriptions'
 
 // Emoji mapping for skills - unique icon for each skill
 const skillEmojis: Record<string, string> = {
@@ -55,11 +55,11 @@ interface SkillCardProps {
 }
 
 export function SkillCard({ skill, onClick, isExpanded, isChild }: SkillCardProps) {
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
   const emoji = getSkillEmoji(skill.id, skill.isFolder)
 
   // Get Chinese name if available
-  const displayName = language === 'zh' ? getSkillName(skill.id) : skill.name
+  const displayName = language === 'zh' ? getSkillName(skill.id) : getSkillNameEn(skill.id)
   const childCount = skill.children?.length || 0
 
   return (
@@ -90,7 +90,7 @@ export function SkillCard({ skill, onClick, isExpanded, isChild }: SkillCardProp
       {/* Folder child count */}
       {skill.isFolder && childCount > 0 && (
         <span className="text-xs text-amber-600 font-medium">
-          {isExpanded ? '▼' : '▶'} {childCount} 个子技能
+          {isExpanded ? '▼' : '▶'} {t('childCount').replace('{count}', String(childCount))}
         </span>
       )}
 

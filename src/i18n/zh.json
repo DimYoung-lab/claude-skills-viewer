@@ -21,6 +21,7 @@
   "categoryDev": "开发",
   "noResults": "未找到匹配的 Skills",
   "childSkills": "子技能列表",
+  "childCount": "{count} 个子技能",
   "expandFolder": "展开",
   "collapseFolder": "收起"
 }

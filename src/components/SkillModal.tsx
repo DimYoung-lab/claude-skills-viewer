@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import type { Skill } from '../types'
 import { useLanguage } from '../context/LanguageContext'
-import { getSkillName, getSkillDescription } from '../data/skillDescriptions'
+import { getSkillName, getSkillNameEn, getSkillDescription } from '../data/skillDescriptions'
 
 // Emoji mapping for skills - unique icon for each skill
 const skillEmojis: Record<string, string> = {
@@ -48,7 +48,7 @@ interface SkillModalProps {
 }
 
 export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -62,10 +62,23 @@ export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
 
   const emoji = getSkillEmoji(skill.id, skill.isFolder)
 
-  // Get Chinese name and description if available
-  const chineseDesc = getSkillDescription(skill.id)
-  const displayName = language === 'zh' ? getSkillName(skill.id) : skill.name
-  const displayDesc = language === 'zh' && chineseDesc ? chineseDesc.description : skill.description
+  // Get name and description based on language
+  const skillDesc = getSkillDescription(skill.id)
+  const displayName = language === 'zh' ? getSkillName(skill.id) : getSkillNameEn(skill.id)
+  let displayDesc = language === 'zh'
+    ? skillDesc?.description
+    : skillDesc?.descriptionEn || skill.description
+
+  // Clean and truncate description for better display
+  if (displayDesc) {
+    // Replace multiple whitespace/newlines with single space
+    displayDesc = displayDesc.replace(/\s+/g, ' ').trim()
+    // Truncate to 300 characters with ellipsis
+    const maxLength = 300
+    if (displayDesc.length > maxLength) {
+      displayDesc = displayDesc.substring(0, maxLength) + '...'
+    }
+  }
 
   return (
     <div
@@ -111,14 +124,14 @@ export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
 
           {/* Description - show full description without truncation */}
           <p className="text-slate-600 mb-6 leading-relaxed whitespace-pre-wrap">
-            {displayDesc || '暂无描述 / No description available.'}
+            {displayDesc || (language === 'zh' ? '暂无描述' : 'No description available')}
           </p>
 
           {/* Children list for folders */}
           {skill.isFolder && skill.children && skill.children.length > 0 && (
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-slate-700 mb-2">
-                {language === 'zh' ? '子技能列表' : 'Child Skills'}
+                {t('childSkills')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {skill.children.map(child => (
@@ -126,7 +139,7 @@ export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
                     key={child.id}
                     className="px-2 py-1 text-xs bg-amber-100 text-amber-700 rounded-full"
                   >
-                    {language === 'zh' ? getSkillName(child.id) : child.name}
+                    {language === 'zh' ? getSkillName(child.id) : getSkillNameEn(child.id)}
                   </span>
                 ))}
               </div>

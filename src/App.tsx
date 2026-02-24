@@ -214,7 +214,7 @@ function AppContent() {
             )}
             {showDivider && (
               <span className="text-blue-500 text-sm ml-2">
-                (含 {displaySkills.filter(d => d.isChild).length} 个子技能)
+                ({t('childCount').replace('{count}', String(displaySkills.filter(d => d.isChild).length))})
               </span>
             )}
           </p>

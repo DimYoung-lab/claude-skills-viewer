@@ -1,6 +1,6 @@
 {
   "name": "claude-skills-viewer",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Claude Code Skills Viewer - 查看和管理本地安装的Skills",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -44,7 +44,7 @@
     "appId": "com.claude.skillsviewer",
     "productName": "Claude Skills Viewer",
     "directories": {
-      "output": "release3"
+      "output": "release5"
     },
     "win": {
       "target": "dir"

@@ -21,6 +21,7 @@
   "categoryDev": "Dev",
   "noResults": "No matching Skills found",
   "childSkills": "Child Skills",
+  "childCount": "{count} child skills",
   "expandFolder": "Expand",
   "collapseFolder": "Collapse"
 }

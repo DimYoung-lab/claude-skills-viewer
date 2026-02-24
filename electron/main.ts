@@ -49,7 +49,7 @@ function getAllSkills(): Skill[] {
       if (fs.existsSync(skillMdPath)) {
         const content = fs.readFileSync(skillMdPath, 'utf-8')
         // Get first 200 chars as description
-        description = content.substring(0, 200).replace(/[#*`\n]/g, ' ').trim()
+        description = content.substring(0, 500).replace(/[#*`\n]/g, ' ').trim()
         if (content.length > 200) description += '...'
       }
 
@@ -63,7 +63,7 @@ function getAllSkills(): Skill[] {
       const skill: Skill = {
         id: skillName,
         name: formatSkillName(skillName),
-        description: description || (isFolder ? `包含 ${childSkills.length} 个子技能` : ''),
+        description: description || (isFolder ? '' : ''),
         path: skillPath,
         hasSkillFile,
         isFolder,
