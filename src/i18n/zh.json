@@ -12,5 +12,12 @@
   "skillDetails": "Skill 详情",
   "retry": "重试",
   "totalSkills": "Skills 总数",
-  "times": "次"
+  "times": "次",
+  "searchPlaceholder": "搜索 Skills...",
+  "categoryAll": "全部",
+  "categoryWriting": "写作",
+  "categoryNews": "资讯",
+  "categoryProductivity": "效率",
+  "categoryDev": "开发",
+  "noResults": "未找到匹配的 Skills"
 }

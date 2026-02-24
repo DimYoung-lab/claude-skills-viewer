@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { Skill, UsageRecord } from '../types'
+import type { Skill } from '../types'
 import { useLanguage } from '../context/LanguageContext'
 
 // Emoji mapping for skills
@@ -23,11 +23,10 @@ function getSkillEmoji(skillId: string): string {
 
 interface SkillModalProps {
   skill: Skill | null
-  usage?: UsageRecord
   onClose: () => void
 }
 
-export function SkillModal({ skill, usage, onClose }: SkillModalProps) {
+export function SkillModal({ skill, onClose }: SkillModalProps) {
   const { t } = useLanguage()
 
   useEffect(() => {
@@ -41,8 +40,6 @@ export function SkillModal({ skill, usage, onClose }: SkillModalProps) {
   if (!skill) return null
 
   const emoji = getSkillEmoji(skill.id)
-  const usageCount = usage?.count || 0
-  const lastUsed = usage?.lastUsed ? new Date(usage.lastUsed).toLocaleDateString() : '-'
 
   return (
     <div
@@ -86,18 +83,6 @@ export function SkillModal({ skill, usage, onClose }: SkillModalProps) {
           <p className="text-slate-600 mb-6 leading-relaxed">
             {skill.description || 'No description available.'}
           </p>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="p-4 rounded-xl bg-slate-50">
-              <div className="text-sm text-slate-500 mb-1">{t('usageCount')}</div>
-              <div className="text-2xl font-bold text-slate-800">{usageCount}</div>
-            </div>
-            <div className="p-4 rounded-xl bg-slate-50">
-              <div className="text-sm text-slate-500 mb-1">{t('lastUsed')}</div>
-              <div className="text-lg font-semibold text-slate-800">{lastUsed}</div>
-            </div>
-          </div>
 
           {/* Path */}
           <div className="p-3 rounded-lg bg-slate-100 text-xs text-slate-500 break-all">

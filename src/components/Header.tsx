@@ -5,8 +5,28 @@ interface HeaderProps {
   refreshing: boolean
 }
 
+function formatDate(date: Date, language: 'zh' | 'en'): string {
+  if (language === 'zh') {
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+    const weekDay = weekDays[date.getDay()]
+    return `${year}年${month}月${day}日 ${weekDay}`
+  } else {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long'
+    }
+    return date.toLocaleDateString('en-US', options)
+  }
+}
+
 export function Header({ onRefresh, refreshing }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage()
+  const today = formatDate(new Date(), language)
 
   const toggleLanguage = () => {
     setLanguage(language === 'zh' ? 'en' : 'zh')
@@ -21,9 +41,12 @@ export function Header({ onRefresh, refreshing }: HeaderProps) {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
               <span className="text-white text-lg font-bold">C</span>
             </div>
-            <h1 className="text-xl font-semibold text-slate-800">
-              {t('headerTitle')}
-            </h1>
+            <div className="flex flex-col">
+              <h1 className="text-xl font-semibold text-slate-800">
+                {t('headerTitle')}
+              </h1>
+              <span className="text-xs text-slate-500">{today}</span>
+            </div>
           </div>
 
           {/* Actions */}

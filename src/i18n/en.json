@@ -12,5 +12,12 @@
   "skillDetails": "Skill Details",
   "retry": "Retry",
   "totalSkills": "Total Skills",
-  "times": "times"
+  "times": "times",
+  "searchPlaceholder": "Search Skills...",
+  "categoryAll": "All",
+  "categoryWriting": "Writing",
+  "categoryNews": "News",
+  "categoryProductivity": "Productivity",
+  "categoryDev": "Dev",
+  "noResults": "No matching Skills found"
 }
