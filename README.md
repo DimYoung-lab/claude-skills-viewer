@@ -99,15 +99,11 @@ npm run electron:build
 
 ## 更新日志
 
-### v1.0.5 (2026-02-25)
-
-- **mcp-builder 技能支持**: 添加了 mcp-builder 技能的中英文支持和专属图标 🔧
-- **技能图标完善**: 为新增技能添加了 emoji 图标映射
-
 ### v1.0.4 (2026-02-25)
 
-- **idea-debate 技能支持**: 添加了 idea-debate 技能的中英文支持和专属图标 ⚖️
-- **技能图标完善**: 为新增技能添加了 emoji 图标映射
+- **新增技能支持**: 添加了 idea-debate 和 mcp-builder 技能的中英文支持和专属图标
+- **优化了映射逻辑**: skill-creator 创建新 skill 时自动生成 skillDescriptions.ts 更新代码
+- **技能图标完善**: 为新增技能添加了 emoji 图标映射（⚖️、🔧）
 
 ### v1.0.3 (2026-02-24)
 
