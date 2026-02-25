@@ -53,6 +53,12 @@ export const skillDescriptions: Record<string, SkillDescription> = {
     description: '当用户有想法需要评估时，创建正方和反方进行辩论，第三个agent给出客观总结。适用于分析方案的优缺点和可行性。',
     descriptionEn: 'When user has an idea to evaluate, creates pro and con agents to debate, with a third agent providing objective summary. Ideal for analyzing pros and cons of a plan.'
   },
+  'mcp-builder': {
+    name: 'MCP 构建',
+    nameEn: 'MCP Builder',
+    description: 'MCP服务器开发指南。四阶段开发流程：研究规划、实现、审查优化、评估创建。涵盖Python和Node/TypeScript实现。',
+    descriptionEn: 'MCP server development guide. Four-phase process: research planning, implementation, review, evaluation. Covers Python and Node/TypeScript implementations.'
+  },
   'superpowers': {
     name: '超级能力',
     nameEn: 'Superpowers',

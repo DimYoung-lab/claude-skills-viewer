@@ -16,6 +16,7 @@ const skillEmojis: Record<string, string> = {
   'meeting-summary': '🤝',
   'thesis-progress-report': '📚',
   'idea-debate': '⚖️',
+  'mcp-builder': '🔧',
 
   // Superpowers child skills
   'brainstorming': '💡',
