@@ -47,6 +47,12 @@ export const skillDescriptions: Record<string, SkillDescription> = {
     description: '帮助创建和更新 Skills，扩展 Claude 的能力。提供专业的技能开发工作流程和最佳实践。',
     descriptionEn: 'Helps create and update Skills, extending Claude capabilities. Provides professional skill development workflows and best practices.'
   },
+  'idea-debate': {
+    name: 'Idea 辩论台',
+    nameEn: 'Idea Debate',
+    description: '当用户有想法需要评估时，创建正方和反方进行辩论，第三个agent给出客观总结。适用于分析方案的优缺点和可行性。',
+    descriptionEn: 'When user has an idea to evaluate, creates pro and con agents to debate, with a third agent providing objective summary. Ideal for analyzing pros and cons of a plan.'
+  },
   'superpowers': {
     name: '超级能力',
     nameEn: 'Superpowers',

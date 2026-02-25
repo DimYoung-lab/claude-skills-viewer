@@ -13,6 +13,7 @@ const skillEmojis: Record<string, string> = {
   'superpowers': '💼',
   'meeting-summary': '🤝',
   'thesis-progress-report': '📚',
+  'idea-debate': '⚖️',
 
   // Superpowers child skills
   'brainstorming': '💡',
