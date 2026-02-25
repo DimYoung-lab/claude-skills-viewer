@@ -23,5 +23,6 @@
   "childSkills": "Child Skills",
   "childCount": "{count} child skills",
   "expandFolder": "Expand",
-  "collapseFolder": "Collapse"
+  "collapseFolder": "Collapse",
+  "externalSkill": "External"
 }

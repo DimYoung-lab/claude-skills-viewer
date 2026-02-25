@@ -1,7 +1,12 @@
 import { useEffect } from 'react'
 import type { Skill } from '../types'
 import { useLanguage } from '../context/LanguageContext'
-import { getSkillName, getSkillNameEn, getSkillDescription } from '../data/skillDescriptions'
+import { getSkillName, getSkillNameEn, getSkillDescription, skillDescriptions } from '../data/skillDescriptions'
+
+// Check if a skill is external (not in the mapping)
+function isExternalSkill(skillId: string): boolean {
+  return !skillDescriptions[skillId]
+}
 
 // Emoji mapping for skills - unique icon for each skill
 const skillEmojis: Record<string, string> = {
@@ -39,9 +44,16 @@ const skillEmojis: Record<string, string> = {
   'default': '⚡'
 }
 
+// Default emojis for unmapped skills (generated from skill name)
+const defaultEmojis = ['🎯', '💎', '🚀', '🌟', '🔮', '📦', '🎨', '🛠️', '💡', '🎭', '📚', '🔒', '⚙️', '🌈', '🎪', '🏆', '🎲', '📱', '💻', '🌐']
+
 function getSkillEmoji(skillId: string, isFolder?: boolean): string {
   if (isFolder) return '📁'
-  return skillEmojis[skillId] || skillEmojis.default
+  // Use skill-specific icon if mapped
+  if (skillEmojis[skillId]) return skillEmojis[skillId]
+  // Generate a consistent emoji based on skill name hash
+  const hash = skillId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  return defaultEmojis[hash % defaultEmojis.length]
 }
 
 interface SkillModalProps {
@@ -64,13 +76,18 @@ export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
   if (!skill) return null
 
   const emoji = getSkillEmoji(skill.id, skill.isFolder)
+  const external = isExternalSkill(skill.id)
 
   // Get name and description based on language
   const skillDesc = getSkillDescription(skill.id)
-  const displayName = language === 'zh' ? getSkillName(skill.id) : getSkillNameEn(skill.id)
+  // Use mapping first, then fallback to frontmatter or formatted id
+  const mappedName = language === 'zh' ? getSkillName(skill.id) : getSkillNameEn(skill.id)
+  const displayName = mappedName !== skill.id ? mappedName : (skill.frontmatterName || skill.name)
+
+  // Use mapping description first, then fallback to frontmatterDescription or skill.description
   let displayDesc = language === 'zh'
     ? skillDesc?.description
-    : skillDesc?.descriptionEn || skill.description
+    : skillDesc?.descriptionEn || skill.frontmatterDescription || skill.description
 
   // Clean and truncate description for better display
   if (displayDesc) {
@@ -98,9 +115,13 @@ export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
       >
         {/* Gradient Header */}
         <div className={`h-24 ${
-          skill.isFolder || isChild
-            ? 'bg-gradient-to-r from-amber-500 to-orange-600'
-            : 'bg-gradient-to-r from-sky-500 to-blue-600'
+          (skill.isFolder && external) || (isChild && external)
+            ? 'bg-gradient-to-r from-purple-500 to-violet-600'
+            : skill.isFolder || isChild
+              ? 'bg-gradient-to-r from-amber-500 to-orange-600'
+              : external
+                ? 'bg-gradient-to-r from-purple-500 to-violet-600'
+                : 'bg-gradient-to-r from-sky-500 to-blue-600'
         }`} />
 
         {/* Close Button */}
@@ -125,6 +146,13 @@ export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
             {displayName}
           </h2>
 
+          {/* External skill badge - show for all external skills including folders */}
+          {external && (
+            <span className="inline-block px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full mb-3">
+              {t('externalSkill')}
+            </span>
+          )}
+
           {/* Description - show full description without truncation */}
           <p className="text-slate-600 mb-6 leading-relaxed whitespace-pre-wrap">
             {displayDesc || (language === 'zh' ? '暂无描述' : 'No description available')}
@@ -137,14 +165,21 @@ export function SkillModal({ skill, onClose, isChild }: SkillModalProps) {
                 {t('childSkills')}
               </h3>
               <div className="flex flex-wrap gap-2">
-                {skill.children.map(child => (
-                  <span
-                    key={child.id}
-                    className="px-2 py-1 text-xs bg-amber-100 text-amber-700 rounded-full"
-                  >
-                    {language === 'zh' ? getSkillName(child.id) : getSkillNameEn(child.id)}
-                  </span>
-                ))}
+                {skill.children.map(child => {
+                  const childExternal = isExternalSkill(child.id)
+                  return (
+                    <span
+                      key={child.id}
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        childExternal
+                          ? 'bg-purple-100 text-purple-700'
+                          : 'bg-amber-100 text-amber-700'
+                      }`}
+                    >
+                      {language === 'zh' ? getSkillName(child.id) : getSkillNameEn(child.id)}
+                    </span>
+                  )
+                })}
               </div>
             </div>
           )}

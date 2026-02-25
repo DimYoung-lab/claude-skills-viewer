@@ -23,5 +23,6 @@
   "childSkills": "子技能列表",
   "childCount": "{count} 个子技能",
   "expandFolder": "展开",
-  "collapseFolder": "收起"
+  "collapseFolder": "收起",
+  "externalSkill": "外部获取"
 }

@@ -2,6 +2,8 @@ export interface Skill {
   id: string;
   name: string;
   description?: string;
+  frontmatterName?: string;
+  frontmatterDescription?: string;
   icon?: string;
   path?: string;
   isFolder?: boolean;

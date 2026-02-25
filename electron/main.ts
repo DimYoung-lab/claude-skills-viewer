@@ -16,10 +16,54 @@ interface Skill {
   id: string
   name: string
   description: string
+  frontmatterName?: string
+  frontmatterDescription?: string
   path: string
   hasSkillFile: boolean
   isFolder?: boolean
   children?: Skill[]
+}
+
+// Parse YAML frontmatter from SKILL.md content
+function parseFrontmatter(content: string): { name?: string; description?: string } {
+  const result: { name?: string; description?: string } = {}
+
+  // Check if content starts with ---
+  if (!content.startsWith('---')) {
+    return result
+  }
+
+  // Find the closing ---
+  const endIndex = content.indexOf('---', 3)
+  if (endIndex === -1) {
+    return result
+  }
+
+  const frontmatter = content.substring(3, endIndex).trim()
+
+  // Parse YAML lines
+  const lines = frontmatter.split('\n')
+  for (const line of lines) {
+    const colonIndex = line.indexOf(':')
+    if (colonIndex === -1) continue
+
+    const key = line.substring(0, colonIndex).trim()
+    let value = line.substring(colonIndex + 1).trim()
+
+    // Remove quotes if present
+    if ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1)
+    }
+
+    if (key === 'name') {
+      result.name = value
+    } else if (key === 'description') {
+      result.description = value
+    }
+  }
+
+  return result
 }
 
 function getAllSkills(): Skill[] {
@@ -45,10 +89,22 @@ function getAllSkills(): Skill[] {
 
       // Look for SKILL.md in the skill folder
       let description = ''
+      let frontmatterName: string | undefined
+      let frontmatterDescription: string | undefined
       const skillMdPath = path.join(skillPath, 'SKILL.md')
       if (fs.existsSync(skillMdPath)) {
         const content = fs.readFileSync(skillMdPath, 'utf-8')
-        // Get first 200 chars as description
+
+        // Parse frontmatter
+        const fm = parseFrontmatter(content)
+        if (fm.name) {
+          frontmatterName = fm.name
+        }
+        if (fm.description) {
+          frontmatterDescription = fm.description
+        }
+
+        // Get first 500 chars as fallback description
         description = content.substring(0, 500).replace(/[#*`\n]/g, ' ').trim()
         if (content.length > 200) description += '...'
       }
@@ -64,6 +120,8 @@ function getAllSkills(): Skill[] {
         id: skillName,
         name: formatSkillName(skillName),
         description: description || (isFolder ? '' : ''),
+        frontmatterName,
+        frontmatterDescription,
         path: skillPath,
         hasSkillFile,
         isFolder,
@@ -105,7 +163,19 @@ function getChildSkills(folderPath: string): Skill[] {
 
       // This is a real skill folder, read its description
       let description = ''
+      let frontmatterName: string | undefined
+      let frontmatterDescription: string | undefined
       const content = fs.readFileSync(skillMdPath, 'utf-8')
+
+      // Parse frontmatter
+      const fm = parseFrontmatter(content)
+      if (fm.name) {
+        frontmatterName = fm.name
+      }
+      if (fm.description) {
+        frontmatterDescription = fm.description
+      }
+
       description = content.substring(0, 200).replace(/[#*`\n]/g, ' ').trim()
       if (content.length > 200) description += '...'
 
@@ -113,6 +183,8 @@ function getChildSkills(folderPath: string): Skill[] {
         id: entry.name,
         name: formatSkillName(entry.name),
         description,
+        frontmatterName,
+        frontmatterDescription,
         path: childPath,
         hasSkillFile: false,
         isFolder: false,
