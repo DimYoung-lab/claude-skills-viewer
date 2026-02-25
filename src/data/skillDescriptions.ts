@@ -41,6 +41,12 @@ export const skillDescriptions: Record<string, SkillDescription> = {
     description: '用于创建和管理多个子代理协同完成复杂任务。适用于并行执行、分工协作、多源信息收集。',
     descriptionEn: 'Create and manage multiple sub-agents to collaborate on complex tasks. Suitable for parallel execution, division of labor, and multi-source information gathering.'
   },
+  'skill-learning-planner': {
+    name: '技能学习规划师',
+    nameEn: 'Skill Learning Planner',
+    description: '根据招聘网站岗位信息自动生成技能学习路径和求职方向。帮你规划RAG、Agent、Python等技术的学习方案。',
+    descriptionEn: 'Automatically generates skill learning paths and career guidance based on job postings. Helps plan learning paths for RAG, Agent, Python and other technologies.'
+  },
   'skill-creator': {
     name: '技能创建',
     nameEn: 'Skill Creator',

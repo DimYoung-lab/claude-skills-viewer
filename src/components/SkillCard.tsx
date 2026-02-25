@@ -9,6 +9,7 @@ const skillEmojis: Record<string, string> = {
   'daily-ai-news': '📰',
   'rag-qa': '🔍',
   'agent-teams': '👥',
+  'skill-learning-planner': '📖',
   'skill-creator': '🛠️',
   'superpowers': '💼',
   'meeting-summary': '🤝',

@@ -12,12 +12,26 @@ export default defineConfig({
         entry: 'electron/main.ts',
         onstart(options) {
           options.startup()
+        },
+        vite: {
+          build: {
+            rollupOptions: {
+              external: ['electron']
+            }
+          }
         }
       },
       {
         entry: 'electron/preload.ts',
         onstart(options) {
           options.reload()
+        },
+        vite: {
+          build: {
+            rollupOptions: {
+              external: ['electron']
+            }
+          }
         }
       }
     ]),
